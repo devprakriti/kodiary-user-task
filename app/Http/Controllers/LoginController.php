@@ -111,40 +111,7 @@ class LoginController extends Controller
         $user = $this->user->get();
     }
 
-    // public function changePassword()
-    // {
-    //     return view('user::login.change-password');
-    // }
-
-    // public function updatePassword(Request $request)
-    // {
-    //     $oldPassword = $request->get('old_password');
-    //     $newPassword = $request->get('password');
-
-    //     $id = Auth::user()->id;
-    //     $users = Auth::user()->find($id);
-
-    //     if (!(Hash::check($oldPassword, $users->password))) {
-    //         Flash('Old Password Do Not Match !')->error();
-
-    //         return redirect(route('change-password'));
-    //     } else {
-    //         $data['password'] = Hash::make($newPassword);
-
-    //         $this->user->update($id, $data);
-
-    //         Flash('Password Successfully Updated. Please Login Again!')->success();
-    //     }
-
-    //     Auth::logout();
-
-    //     return redirect(route('login'));
-    // }
-
-    public function permissionDenied()
-    {
-        return view('user::authPermission.permission-denied');
-    }
+    
 
     public function logout()
     {
