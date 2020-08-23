@@ -20,8 +20,8 @@
 
 
 
-    <!-- DataTables -->{{-- 
-  <link rel="stylesheet" href="{{ asset('datatables/dataTables.bootstrap.css') }}"> --}}
+    <!-- DataTables -->
+  <link rel="stylesheet" href="{{ asset('datatables/dataTables.bootstrap.css') }}">
   
 
 
@@ -86,14 +86,13 @@
         </main>
     </div>
 
- {{--    <script>
-$(document).ready(function() {
+<script  type="application/javascript">
+    $(document).ready(function() {
     $('#example').DataTable();
 } );
 </script>
-<!-- DataTables -->
-<script src="{{ asset('datatables/jquery.dataTables.min.js') }}"></script>
-<script src="{{ asset('datatables/dataTables.bootstrap.min.js') }}"></script> --}}
+<script type="application/javascript" href="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script type="application/javascript" href="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
     
 </body>
 </html>

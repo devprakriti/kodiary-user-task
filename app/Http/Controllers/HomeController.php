@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Auth;
-
 use App\Repositories\UserRepository;
 
 class HomeController extends Controller
@@ -18,21 +17,19 @@ class HomeController extends Controller
         $this->user = $user;
     }
 
-   /**
+    /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function index()
     {
-
     }
 
     public function home()
     {
-       
         $user = $this->user->get();
-       
+
         return view('home')->with('user', $user);
     }
 }
