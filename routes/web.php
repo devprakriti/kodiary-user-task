@@ -26,32 +26,16 @@ Route::get('/', ['as' => 'login', 'uses' => 'LoginController@login']);
 Route::post('login', ['as' => 'login.store', 'uses' => 'LoginController@authenticate']);
 
 
- Route::get('dashboard', ['as' => 'dashboard', 'uses' => 'HomeController@home']);
-
- Route::get('test', function () {
- 	     $users= App\User::where('status',0)->get();
-
-         $event=(object)['content' => 'test','subject' => 'Test Email'];
+Route::get('dashboard', ['as' => 'dashboard', 'uses' => 'HomeController@home']);
 
 
-         App\Jobs\SendEmailJob::dispatch($users,$event);
 
-    // $user = [
-    //     'name' => 'Mahedi Hasan',
-    //     'info' => 'Laravel Developer'
-    // ];
+Route::get('email', ['as' => 'reset_password_without_token', 'uses' => 'LoginController@sendEmail']);
 
-    // \Mail::to('developer.prakriti@gmail.com')->send(new \App\Mail\NewMail($user));
-
-    dd("success");
-
-});
+Route::get('reset_password_with_token', ['as' => 'reset_password_with_token', 'uses' => 'LoginController@resetPasswordNew']);
 
 
-Route::get('reset_password_without_token/{email}', ['as' => 'reset_password_without_token', 'uses' => 'LoginController@validatePasswordRequest']);
-Route::get('reset_password_with_token', ['as' => 'reset_password_with_token', 'uses' => 'LoginController@resetPassword']);
-
-Route::get('password/reset/{token}/?email={email}', ['as' => 'passwordresetlink', 'uses' => 'LoginController@resetPassword']);
+Route::post('reset_password_with_token_store', ['as' => 'reset_password_with_token_store', 'uses' => 'LoginController@resetPassword']);
 
 
  

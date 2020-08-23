@@ -9,7 +9,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\User;
 use Carbon\Carbon;
+use Validator;
 use DB;
+use App\Mail\NewMail;
+use App\Jobs\SendEmailJob;
+use Illuminate\Support\Facades\Mail;
 use App\Repositories\UserRepository;
 
 class LoginController extends Controller
@@ -36,8 +40,8 @@ class LoginController extends Controller
       
         if (auth()->attempt(['email' => $data['email'], 'password' => $data['password'], 'status' => 1])) {
 
-            dd($this->user->get());
-            return redirect()->intended(route('dashboard'));
+            $user = $this->user->get();
+            return redirect()->intended(route('dashboard'))->with('user', $user);
         } 
         elseif (auth()->attempt(['email' => $data['email'], 'password' => $data['password'], 'status' => 0])) {
           
@@ -53,76 +57,62 @@ class LoginController extends Controller
         }
     }
 
-        public function validatePasswordRequest(Request $request, $email)
-        {       
-                $user_detail = DB::table(DB::raw('users force index(users_status_index)'))->where('status', 0)->get(); 
+        public function sendEmail()
+          {    
 
-                // User::where('status', 0)->get();
-                $link = [];
-                foreach ($user_detail as $key => $u) {
-
-
-                   $random_no = Str::random(60);
-                   $is_updated = DB::table((DB::raw('users force index(users_email_index)')))->where('email', '=', $u->email)->limit(1)->update(['remember_token' => $random_no]);
-                   $final_user = DB::table(DB::raw('users force index(users_email_index)'))->where('status', 0)->first(); 
-                   $link = route('passwordresetlink', array($final_user->remember_token,$final_user->email));
-                  }
-                  
-                dd($link);   
-                
-            
+           $emailJob = (new SendEmailJob())->delay(Carbon::now()->addSeconds(3));
+           dispatch($emailJob);
+           echo 'Email sent to inactive user';
+                    
         }
 
 
+       public function resetPasswordNew()
+            {
+              $data['email'] = $_GET['email'];
+              $data['token'] = $_GET['token'];       
+              return view('auth.passwords.reset')->with('data', $data);
 
- 
+
+            }
 
 
 
 
+            public function resetPassword(Request $request)
+            {
+             
+              $validator = Validator::make($request->all(), [
+                     'password' => 'required|confirmed',
+                    'token' => 'required' ]);
 
-        // public function resetPassword(Request $request)
-        //     {
-        //         //Validate input
-        //         $validator = Validator::make($request->all(), [
-        //             'email' => 'required|email|exists:users,email',
-        //             'password' => 'required|confirmed',
-        //             'token' => 'required' ]);
+                //check if payload is valid before moving on
+                if ($validator->fails()) {
+                    return redirect()->back()->withErrors(['email' => 'Please complete the form']);
+                }
 
-        //         //check if payload is valid before moving on
-        //         if ($validator->fails()) {
-        //             return redirect()->back()->withErrors(['email' => 'Please complete the form']);
-        //         }
+                $password = $request->password;
+                $tokenData = DB::table('users')
+                ->where('remember_token', $request->token)->first();
 
-        //         $password = $request->password;
-        //     // Validate the token
-        //         $tokenData = DB::table('password_resets')
-        //         ->where('token', $request->token)->first();
-        //     // Redirect the user back to the password reset request form if the token is invalid
-        //         if (!$tokenData) return view('auth.passwords.email');
+                if (!$tokenData) return view('auth.passwords.email');
 
-        //         $user = User::where('email', $tokenData->email)->first();
-        //     // Redirect the user back if the email is invalid
-        //         if (!$user) return redirect()->back()->withErrors(['email' => 'Email not found']);
-        //     //Hash and update the new password
-        //         $user->password = \Hash::make($password);
-        //         $user->update(); //or $user->save();
+                $user = User::where('email', $tokenData->email)->first();
 
-        //         //login the user immediately they change password successfully
-        //         Auth::login($user);
+                if (!$user) return redirect()->back()->withErrors(['email' => 'Email not found']);
+                $user->password = \Hash::make($password);
+                 $user->remember_token = null;
+                 $user->status = 1;
+                $user->update(); 
+                Auth::login($user);
+              
+                if ($this->sendSuccessEmail($tokenData->email)) {
+                    return view('index');
+                } else {
+                    return redirect()->back()->withErrors(['email' => trans('A Network Error occurred. Please try again.')]);
+                }
 
-        //         //Delete the token
-        //         DB::table('password_resets')->where('email', $user->email)
-        //         ->delete();
-
-        //         //Send Email Reset Success Email
-        //         if ($this->sendSuccessEmail($tokenData->email)) {
-        //             return view('index');
-        //         } else {
-        //             return redirect()->back()->withErrors(['email' => trans('A Network Error occurred. Please try again.')]);
-        //         }
-
-        //     }
+            }
 
     
 
@@ -132,9 +122,7 @@ class LoginController extends Controller
 
        $user = $this->user->get();
 
-       Mail::queue('emails.test', ['user' => 'prakriti'], function($message) use ($user){
-            $message->to('developer.prakriti@gmail.com', 'prakriti')->subject('Sending Email Using Queue in Laravel 5');
-        });
+      
 
    }
     

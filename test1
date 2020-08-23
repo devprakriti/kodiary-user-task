@@ -1,0 +1,102 @@
+<?php
+
+namespace App\Jobs;
+
+use Illuminate\Bus\Queueable;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use App\Mail\NewMail;
+use Mail;
+
+class SendEmailJob implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+     public $user = [];
+
+    /**
+     * Create a new job instance.
+     */
+    
+
+
+
+
+    public function __construct($user)
+    {
+        $this->user = $user;
+    }
+
+    /**
+     * Execute the job.
+     */
+    public function handle()
+    {
+        
+
+        Mail::to('developer.prakriti@gmail.com')->send(new NewMail());
+    }
+
+
+    //  public function handle(Mailer $mailer)
+    // {
+    //    $mailer->send('email.test',['user'=>'user'], function ($message)
+    //    {
+
+    //         $message->from('developer.prakriti@gmail.com', 'Christian Nwmaba');
+
+    //         $message->to('hello@gmail.com');
+
+    //     });
+    // }
+
+}
+
+
+<?php
+
+namespace App\Mail;
+
+use Illuminate\Bus\Queueable;
+use Illuminate\Mail\Mailable;
+use Illuminate\Queue\SerializesModels;
+
+class NewMail extends Mailable
+{
+    use Queueable, SerializesModels;
+      protected $details;
+
+    /**
+     * Create a new message instance.
+     */
+  
+
+
+
+
+
+    public function __construct($details)
+    {
+
+        $this->details = $details;
+    }
+
+    /**
+     * Build the message.
+     *
+     * @return $this
+     */
+    public function build()
+    {   
+        // $details = 'name';
+        // return $this->view('email.test')
+        //     ->subject('I am testing.')
+        //     ->with(['details' => $details,]);
+
+
+         return $this->view('email.test')->with('details', $details);
+    }
+}
+
