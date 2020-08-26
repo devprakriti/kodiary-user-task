@@ -30,6 +30,7 @@ class SendEmailJob implements ShouldQueue
     public function handle()
     {
         $user_detail = DB::table(DB::raw('users force index(users_status_index)'))->where('status', 0)->get();
+        
         $link = [];
 
         foreach ($user_detail as $key => $u) {
@@ -38,7 +39,6 @@ class SendEmailJob implements ShouldQueue
             $email = $u->email;
             $token = $random_no;
             $reset_link = url('reset_password_with_token'.'?token='.$token.'&email='.$email);
-            
             Mail::to('developer.prakriti@gmail.com')->send(new NewMail($reset_link));
         }
     }

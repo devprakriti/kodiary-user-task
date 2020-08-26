@@ -12,8 +12,10 @@ class Kernel extends ConsoleKernel
      *
      * @var array
      */
-    protected $commands = [
-        //
+      protected $commands = [
+        \App\Console\Commands\InactiveUser::class,
+        \App\Console\Commands\RetryMail::class,
+
     ];
 
     /**
@@ -25,7 +27,9 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('inspire')->hourly();
 
-        $schedule->command('queue:work')->everyMinute(); // 
+        $schedule->command('inactive:user')->everyMinute();
+
+         $schedule->command('retry:mail')->everyMinute();
     }
 
     /**

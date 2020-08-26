@@ -23,30 +23,45 @@
         <table id="example" class="table table-bordered table-striped">
         <thead>
             <tr>
+                <th>S.n</th>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Status</th>
             </tr>
         </thead>
         <tbody>
+          @if(!empty($user) && $user->count())
             @foreach($user as $key=>$u)
-            <tr id="{{ $key }}">
+            <tr id="{{ $key+1 }}">
+                <td>{{ $key+ $user->firstItem() }}</td>
+                <td>{{ $u->name }}</td>
                 <td>{{ $u->email }}</td>
-                <td>{{ $u->email }}</td>
-                <td>{{ $u->status }}</td>
+                <td>@if( $u->status == '1')
+                    Active
+                    @else
+                    InActive
+                    @endif
+                </td>
             </tr>
-            @endforeach
+          @endforeach
+             @else
+            <tr>
+                <td colspan="4">There are no data.</td>
+            </tr>
+          @endif
             
         </tbody>
         <tfoot>
             <tr>
+                <th>S.n</th>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Status</th>
             </tr>
         </tfoot>
     </table>
-        </div>
+    {!! $user->links() !!}
+   </div>
     </div>
 </div>
 @endsection
